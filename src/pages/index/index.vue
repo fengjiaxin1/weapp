@@ -1,40 +1,91 @@
 <template>
-  <view class="index">
-    <view>
-      <img src="" alt="">
+  <view class="index" :style="styleObject">
+    <view class="main">
+      <view class="main-backdrop">
+        <view class="content">
+          <Item
+            v-for="item in map"
+            :key="item.title"
+            :title="item.title"
+            :icon="item.icon"
+            :url="item.url"
+          ></Item>
+        </view>
+      </view>
     </view>
-    {{ state.msg }}
-    <view class="btn">
-      <nut-button type="primary" @click="handleClick('text',  state.msg2, true)">点我</nut-button>
-    </view>
-    <nut-toast :msg=" state.msg" v-model:visible=" state.show" :type=" state.type" :cover=" state.cover" />
   </view>
 </template>
 
-<script setup>
+<script setup scoped>
 import { reactive, toRefs } from 'vue';
-    const state = reactive({
-      msg: '欢迎使用 NutUI3.0 开发小程序',
-      msg2: '你成功了～',
-      type: 'text',
-      show: false,
-      cover: false
-    });
-
-    const handleClick = (type, msg, cover = false) => {
-      state.show = true;
-      state.msg2 = msg;
-      state.type = type;
-      state.cover = cover;
-    };
-
+import Item from './item.vue';
+import Bg from '../../assets/img/bg.jpg';
+const styleObject = reactive({
+  height: '100vh',
+  width: '100vw',
+  position: 'absolute',
+  background: `url(${Bg})`,
+  backgroundSize: '100% auto',
+  backgroundRepeat: 'no-repeat',
+  zIndex: -1,
+});
+const map = [
+  {
+    title: '账号管理',
+    icon: '',
+    url: 'url',
+  },
+  {
+    title: '访客登录',
+    icon: '',
+    url: 'url',
+  },
+  {
+    title: '疫情信息',
+    icon: '',
+    url: 'url',
+  },
+  {
+    title: '用户反馈',
+    icon: '',
+    url: 'url',
+  },
+  {
+    title: '车位管理',
+    icon: '',
+    url: 'url',
+  },
+  {
+    title: '缴费管理',
+    icon: '',
+    url: 'url',
+  },
+  {
+    title: '用户申报',
+    icon: '',
+    url: 'url',
+  },
+];
 </script>
 
 <style lang="scss">
 .index {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+  .main {
+    width: 100vw;
+    height: 100vh;
+    .main-backdrop {
+      width: 100%;
+      height: 100%;
+      box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      background-color: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(5px);
+      .content {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+    }
+  }
 }
 </style>
