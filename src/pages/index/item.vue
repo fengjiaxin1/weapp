@@ -1,11 +1,30 @@
 <template>
-  <view class="icon-index" @click="go(url)">
+  <view class="icon-index" @click="go(path)">
     <view class="icon"> </view>
     <view class="title">{{ title }}</view>
   </view>
 </template>
 
 <script setup scoped>
+import Taro from '@tarojs/taro';
+const scanCode = () => {
+  Taro.scanCode({
+    onlyFromCamera: true,
+    scanType: 'qrCode',
+  })
+    .then((res) => {
+      console.log('res', res.result);
+      Taro.navigateTo({
+        url: res.result,
+        success: (res) => {
+          res.eventChannel.emit('statusIcon', { data: 'leave' });
+        },
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
 const props = defineProps({
   icon: {
     type: String,
@@ -13,12 +32,25 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: 'hahaha',
+    default: '',
   },
-  url: String,
+  path: String,
 });
-const go = (url) => {
-  console.log('url', url);
+const goPath = (path) => {
+  Taro.navigateTo({
+    url: path,
+  });
+};
+const go = (path) => {
+  switch (path) {
+    case 'qrCode':
+      console.log('qrCode');
+      scanCode();
+      break;
+    default:
+      goPath(path);
+      break;
+  }
 };
 </script>
 

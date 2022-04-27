@@ -1,5 +1,16 @@
 import { createApp } from 'vue';
-import { Button, Input, Icon } from '@nutui/nutui-taro';
+import {
+  Button,
+  Input,
+  Icon,
+  Form,
+  FormItem,
+  Cell,
+  CellGroup,
+  DatePicker,
+  Picker,
+  Popup,
+} from '@nutui/nutui-taro';
 import Taro from '@tarojs/taro';
 import './app.less';
 
@@ -14,6 +25,13 @@ const App = createApp({
 
 App.use(Button)
   .use(Input)
-  .use(Icon);
+  .use(Icon)
+  .use(Form)
+  .use(FormItem)
+  .use(Cell)
+  .use(CellGroup)
+  .use(DatePicker)
+  .use(Picker)
+  .use(Popup);
 
 export default App;

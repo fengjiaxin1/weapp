@@ -13,6 +13,22 @@
             placeholder="请输入密码"
             label="密码"
           ></nut-input>
+          <nut-cell
+            title="请选择身份"
+            :desc="desc"
+            @click="
+              () => {
+                show = true;
+              }
+            "
+          ></nut-cell>
+          <nut-picker
+            v-model:visible="show"
+            :columns="columns"
+            title="身份选择"
+            @confirm="confirm"
+          >
+          </nut-picker>
           <view class="btn">
             <nut-button type="primary" @click="loginClick()">登录</nut-button>
             <nut-button type="primary" @click="registerClick()"
@@ -26,48 +42,121 @@
 </template>
 
 <script setup>
-import { reactive, toRefs } from 'vue';
+import { reactive, ref } from 'vue';
 import Bg from '../../assets/img/bg.jpg';
 import Taro from '@tarojs/taro';
+
 const info = reactive({
   user: '',
   password: '',
   status: '',
 });
-const status = ['user', 'property'];
-// TODO:1.加登录校验 2.加status
-const loginClick = () => {
-  Taro.cloud
-    .callFunction({
+const show = ref(false);
+const desc = ref('');
+const columns = ref([
+  { text: '用户', value: 'user' },
+  { text: '物业', value: 'property' },
+  { text: '临时访客', value: 'temporary' },
+]);
+
+const confirm = ({ selectedValue, selectedOptions }) => {
+  desc.value = selectedOptions[0].text;
+  info.status = selectedOptions[0].value;
+};
+const visit = () => {
+  if (!info.user) {
+    Taro.showToast({
+      title: '请输入账号',
+      icon: 'error',
+      duration: 1500,
+    });
+    return false;
+  }
+  if (!info.password) {
+    Taro.showToast({
+      title: '请输入密码',
+      icon: 'error',
+      duration: 1500,
+    });
+    return false;
+  }
+  if (!info.status) {
+    Taro.showToast({
+      title: '请选择身份',
+      icon: 'error',
+      duration: 1500,
+    });
+    return false;
+  }
+  return true;
+};
+const loginClick = async () => {
+  if (!visit()) {
+    return;
+  }
+  try {
+    const res = await Taro.cloud.callFunction({
       // 要调用的云函数名称
       name: 'login',
       // 传递给云函数的event参数
       data: {
-        user: '123456',
-        password: '123456',
-        status: status[0],
+        user: info.user,
+        password: info.password,
+        status: info.status,
+      },
+    });
+    if (res.result === 'success') {
+      await Taro.showToast({
+        title: res.result,
+        icon: 'success',
+        duration: 2000,
+      });
+      await Taro.setStorage({
+        key: 'user',
+        data: info,
+      });
+      await Taro.navigateBack({
+        url: '../index/index',
+      });
+    } else {
+      await Taro.showToast({
+        title: res.result,
+        icon: 'error',
+        duration: 2000,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+  }
+};
+const registerClick = () => {
+  Taro.cloud
+    .callFunction({
+      // 要调用的云函数名称
+      name: 'register',
+      // 传递给云函数的event参数
+      data: {
+        user: info.user,
+        password: info.password,
+        status: info.status,
       },
     })
     .then((res) => {
-      console.log('res', res);
-      Taro.showToast({
-        title: res.result,
-        icon: res.result !== 'success' ? 'error' : 'success',
-        duration: 2000,
-      });
       if (res.result === 'success') {
-        Taro.navigateTo({
-          url: '../index/index',
+        Taro.showToast({
+          title: '注册成功',
+          icon: 'success',
+          duration: 2000,
+        });
+      }
+      if (res.result === 'hasRegister') {
+        Taro.showToast({
+          title: '账号已注册',
+          icon: 'error',
+          duration: 2000,
         });
       }
     });
-};
-const registerClick = () => {
-  Taro.showToast({
-    title: '成功',
-    icon: 'success',
-    duration: 2000,
-  });
 };
 
 const styleObject = reactive({

@@ -8,7 +8,7 @@
             :key="item.title"
             :title="item.title"
             :icon="item.icon"
-            :url="item.url"
+            :path="item.path"
           ></Item>
         </view>
       </view>
@@ -16,10 +16,21 @@
   </view>
 </template>
 
-<script setup scoped>
+<script setup>
+import Taro from '@tarojs/taro';
 import { reactive, toRefs } from 'vue';
 import Item from './item.vue';
 import Bg from '../../assets/img/bg.jpg';
+try {
+  const res = Taro.getStorageSync('user');
+  if (!res) {
+    Taro.navigateTo({
+      url: '../login/index',
+    });
+  }
+} catch (e) {
+  console.log(e);
+}
 const styleObject = reactive({
   height: '100vh',
   width: '100vw',
@@ -33,37 +44,42 @@ const map = [
   {
     title: '账号管理',
     icon: '',
-    url: 'url',
+    path: '../changePassword/index',
   },
   {
-    title: '访客登录',
+    title: '访客登记',
     icon: '',
-    url: 'url',
+    path: 'qrCode',
+  },
+  {
+    title: '访客离开',
+    icon: '',
+    path: 'qrCode',
   },
   {
     title: '疫情信息',
     icon: '',
-    url: 'url',
+    path: 'path',
   },
   {
     title: '用户反馈',
     icon: '',
-    url: 'url',
+    path: 'path',
   },
   {
     title: '车位管理',
     icon: '',
-    url: 'url',
+    path: 'path',
   },
   {
     title: '缴费管理',
     icon: '',
-    url: 'url',
+    path: 'path',
   },
   {
     title: '用户申报',
     icon: '',
-    url: 'url',
+    path: 'path',
   },
 ];
 </script>
